@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Major {
+  id         BigInt   @id @default(autoincrement())
+  name       String   @unique
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  users User[]
+}
+
+enum UserType {
+  JobSeeker
+  Recruiter
+}
+
+model User {
+  nik              String   @id
+  firstName        String
+  lastName         String
+  email            String   @unique
+  phoneNumber      String   @unique
+  password         String
+  majorId          BigInt
+  type             UserType
+  verificationCode String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now())
+
+  major   Major        @relation(fields: [majorId], references: [id])
+  profile UserProfile?
+}
+
+model UserProfile {
+  nik            String  @id
+  profilePicture String?
+  bannerPicture  String?
+  headline       String?
+  about          String?
+
+  user            User             @relation(fields: [nik], references: [nik])
+  workExperiences WorkExperience[]
+}
+
+model JobTitle {
+  id        BigInt   @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  userWorkExperiences WorkExperience[]
+}
+
+model EmploymentType {
+  id         BigInt   @id @default(autoincrement())
+  name       String   @unique
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+}
+
+model Company {
+  id         BigInt   @id @default(autoincrement())
+  name       String   @unique
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  userWorkExperiences WorkExperience[]
+}
+
+enum Month {
+  January
+  February
+  March
+  April
+  May
+  Juny
+  July
+  August
+  September
+  October
+  November
+  December
+}
+
+model WorkExperience {
+  id             BigInt   @id @default(autoincrement())
+  userNik        String
+  titleId        BigInt
+  companyId      BigInt
+  startDateMonth Month
+  startDateYear  Int
+  endDateMonth   Month
+  endDateYear    Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+
+  user    UserProfile @relation(fields: [userNik], references: [nik])
+  title   JobTitle    @relation(fields: [titleId], references: [id])
+  company Company     @relation(fields: [companyId], references: [id])
+}

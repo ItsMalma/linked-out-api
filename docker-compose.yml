@@ -1,0 +1,10 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: linked_out
+      POSTGRES_USER: malma
+      POSTGRES_PASSWORD: pgmalma
+    ports:
+      - "5432:5432"
